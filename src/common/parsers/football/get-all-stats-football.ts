@@ -39,7 +39,7 @@ export const getAllStatsFootball = async (
     }
 
     let errorIteration = 1
-    while (errorsMatch.length && errorIteration <= 3 && repeat) {
+    while (errorsMatch.length && errorIteration <= 5 && repeat) {
         console.log(other(`Try parse errors. try: ${errorIteration}`));
         let matches: matches = await getAllStatsFootball(page, errorsMatch, matchesStats, false);
         errorIteration++;

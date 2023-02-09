@@ -1,12 +1,12 @@
 export const F00TBALL_SELECTORS = {
-    'RESULT_TABLE': '.event--results',
-    'BTN_SHOW_MORE': 'a.event__more.event__more--static',
-    'MATCH_LINE': '.event__match.event__match--static.event__match--twoLine',
     'NAME_TEAMS': 'a.participant__participantName',
     'LEAGUE': '.tournamentHeader__country',
     'SCORES': {
         'HOME': '.detailScore__wrapper span:first-child',
-        'AWAY': '.detailScore__wrapper span:last-child'
+        'AWAY': '.detailScore__wrapper span:last-child',
+        'DETAIL_SCORE': '.detailScore__fullTime',
+        'HOME_D': 'span:first-child',
+        'AWAY_D': 'span:last-child'
     },
     'DATE': '.duelParticipant__startTime',
     'PERIODS': {
@@ -19,6 +19,7 @@ export const F00TBALL_SELECTORS = {
         'TIME_INCIDENT': '.smv__timeBox'
     },
     'ODDS': {
+        'ODDS_ROW': '.oddsRow',
         'NAME': '.bookmaker a',
         'VALUE': '.oddsValueInner'
     },
@@ -31,3 +32,9 @@ export const F00TBALL_SELECTORS = {
         'AWAY': '.stat__awayValue'
     },
 };
+
+export const MATCH_SELECTORS = {
+    'RESULT_TABLE': '.event--results',
+    'BTN_SHOW_MORE': 'a.event__more.event__more--static',
+    'MATCH_LINE': '.event__match.event__match--static.event__match--twoLine',
+}

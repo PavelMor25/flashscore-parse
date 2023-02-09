@@ -4,71 +4,71 @@ export type stats = {
         away: string
     },
     GoalAttempts?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     ShotsonGoal?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     ShotsoffGoal?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     BlockedShots?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     FreeKicks?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     CornerKicks?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     Offsides?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     Throwin?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     GoalkeeperSaves?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     Fouls?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     RedCards?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     YellowCards?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     TotalPasses?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     CompletedPasses?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     Tackles?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     Attacks?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     },
     DangerousAttacks?: {
-        home: number | string,
-        away: number | string
+        home: string,
+        away: string
     }
 }

@@ -1,5 +1,4 @@
 import {teams} from "./teams.type.js";
-import {dateTime} from "./date-time.type.js";
 import {periods} from "./periods.type.js";
 import {incidents} from "./incidents.type.js";
 import {score} from "./score.type.js";
@@ -12,7 +11,7 @@ export type matchStat = {
     countryCupRound: countryCupRound,
     teams: teams,
     score: score,
-    dateTime: dateTime,
+    dateTime: Date,
     periods: periods,
     incidents: incidents,
     odds: odds,

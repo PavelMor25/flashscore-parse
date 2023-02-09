@@ -18,7 +18,7 @@ myManager.registerCommands([
 
 console.log(`
     Добро пожаловать в Flashscore parser.
-    Для инфоррмации о списке команд ввдедите --help.
+    Для информации о списке команд введите --help.
 `);
  const getCommand = () => {
     readLineInterface.question('Введите команду: ', async (command) => {
