@@ -1,11 +1,11 @@
 import {CliCommandInterface} from "./cli-command.interface.js";
 import puppeteer from "puppeteer";
-import {getAllStatsFootball} from "../common/parsers/football/get-all-stats-football.js";
 import {exselWriter} from "../common/exsel-writer/exsel-writer.js";
 import TsvFileReader from "../common/file-reader/tsv-file-reader.js";
 import chalk from "chalk";
 import {errorsWriter} from "../common/errors-writer/errors-writer.js";
 import {getLeaguesMatches} from "../common/parsers/matches/get-leagues-matches.js";
+import {getAllStatsFootball} from "../common/parsers/football/get-all-stats-football.js";
 
 const success = chalk.green.bold;
 const error = chalk.red.bold;
@@ -58,13 +58,13 @@ export default class ParseCommand implements CliCommandInterface {
         this.linksErrors = leaguesMatches.errorsLeagues;
         this.linksMatches = leaguesMatches.matches;
 
-        console.log(success('Total matches to parse:', this.linksMatches.length));
+        console.log(success('Total matchesType to parse:', this.linksMatches.length));
         switch (type) {
             case '-f': {
-                console.log(other('Start parse football matches'));
-                console.time('Parse matches');
+                console.log(other('Start parse football matchesType'));
+                console.time('Parse matchesType');
                 let stats = await getAllStatsFootball(page,this.linksMatches);
-                console.timeEnd('Parse matches');
+                console.timeEnd('Parse matchesType');
 
                 console.log(other('Write to excel'));
                 exselWriter(stats.matchesStats,'football');
@@ -87,6 +87,9 @@ export default class ParseCommand implements CliCommandInterface {
                     ${this.linksErrors.length ? error(`Errors with links: ${this.linksErrors.length}`) : ''}
                 `);
 
+                break;
+            }
+            case '-h': {
                 break;
             }
         }

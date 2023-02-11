@@ -21,7 +21,7 @@ const getAllMatches = async (page: Page, link: string): Promise<string[]> => {
             buttonMore = await page.waitForSelector(BTN_SHOW_MORE).catch((_) => false);
         }
 
-        // Find all matches and take they id
+        // Find all matchesType and take they id
         return await page.$$eval(MATCH_LINE, (hds) => hds.map(el => el.id.slice(4)));
 }
 
