@@ -1,8 +1,8 @@
-
 export type countryCupRound = {
     country: string,
     league: string,
     round: string,
-    roundTwo: string,
-    roundThree: string
+    roundTwo?: string,
+    roundThree?: string,
+    leg?: string | null
 }

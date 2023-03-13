@@ -6,6 +6,9 @@ import chalk from "chalk";
 import {errorsWriter} from "../common/errors-writer/errors-writer.js";
 import {getLeaguesMatches} from "../common/parsers/matches/get-leagues-matches.js";
 import {getAllStatsFootball} from "../common/parsers/football/get-all-stats-football.js";
+import {getAllStatsHockey} from "../common/parsers/hockey/get-all-stats-hockey.js";
+import {jsonHockey} from "../types/hockey/jsonHockey.type.js";
+import {jsonFootball} from "../types/football/json-football.type.js";
 
 const success = chalk.green.bold;
 const error = chalk.red.bold;
@@ -67,7 +70,7 @@ export default class ParseCommand implements CliCommandInterface {
                 console.timeEnd('Parse matchesType');
 
                 console.log(other('Write to excel'));
-                exselWriter(stats.matchesStats,'football');
+                exselWriter<jsonFootball>(stats.matchesStats,'football');
                 console.log(success('Excel ready'));
 
                 if (stats.errorsMatch.length) {
@@ -90,6 +93,32 @@ export default class ParseCommand implements CliCommandInterface {
                 break;
             }
             case '-h': {
+                console.log(other('Start parse hockey matchesType'));
+                console.time('Parse matchesType');
+                let stats = await getAllStatsHockey(page,this.linksMatches);
+                console.timeEnd('Parse matchesType');
+
+                console.log(other('Write to excel'));
+                exselWriter<jsonHockey>(stats.matchesStats,'hockey');
+                console.log(success('Excel ready'));
+
+                if (stats.errorsMatch.length) {
+                    console.log(other('Write errors'));
+                    errorsWriter('hockey', stats.errorsMatch);
+                }
+
+                if (this.linksErrors.length) {
+                    console.log(other('Write errors'));
+                    errorsWriter('hockey', this.linksErrors, true);
+                }
+
+                console.log(`
+                    ${other(`Total matches: ${this.linksMatches.length}`)}
+                    ${success(`Matches parse: ${stats.matchesStats.length}`)}
+                    ${error(`Errors: ${stats.errorsMatch.length} => ${stats.errorsMatch}`)}
+                    ${this.linksErrors.length ? error(`Errors with links: ${this.linksErrors.length}`) : ''}
+                `);
+
                 break;
             }
         }

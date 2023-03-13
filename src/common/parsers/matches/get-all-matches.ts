@@ -17,7 +17,11 @@ const getAllMatches = async (page: Page, link: string): Promise<string[]> => {
         let buttonMore = await page.waitForSelector(BTN_SHOW_MORE, {timeout: 5000}).catch((_) => false);
         // Click all btns "show more match"
         while (buttonMore) {
-            await page.click(BTN_SHOW_MORE, {delay: 10000});
+            try {
+                await page.click(BTN_SHOW_MORE, {delay: 15000});
+            } catch {
+                break;
+            }
             buttonMore = await page.waitForSelector(BTN_SHOW_MORE).catch((_) => false);
         }
 

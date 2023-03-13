@@ -2,9 +2,23 @@ import {Page} from "puppeteer";
 import moment from "moment";
 import {MATCHES_SELECTORS} from "../../../constants/selectors.js";
 import {common} from "../../../types/matches/common.type";
+import {exDataType} from "../../../types/matches/exData.type";
 
 export const getContent = async (page: Page, selector: string) => {
     return await page.$$eval(selector, (hds) => hds.map((el) => el.textContent));
+}
+
+export const getExData = async (page: Page): Promise<exDataType> => {
+    const dData = await page.$('.mi__data');
+    const rowsDData = await dData?.$$('.mi__item') ?? [];
+    const exData = {};
+    for (let row of rowsDData) {
+        let name = await row.$eval('.mi__item__name', el => el.textContent?.replace(':',''));
+        // @ts-ignore
+        exData[name] =  await row.$eval('.mi__item__val', el => el.textContent);
+    }
+
+    return exData
 }
 export const getCommonInfoMatch = async (page: Page): Promise<common> => {
     const {

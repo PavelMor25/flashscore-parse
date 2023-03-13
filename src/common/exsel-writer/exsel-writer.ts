@@ -1,9 +1,9 @@
 import XLSX from 'xlsx';
-import {jsonFootball} from "../../types/football/json-football.type.js";
 import moment from "moment";
-export const exselWriter = (data: jsonFootball[], type: string) => {
-    const workbook = XLSX.readFile('./excel/stats.xlsx');
-
+import fs from 'fs';
+export const exselWriter = <T> (data: T[], type: string) => {
+    const isExsist = fs.existsSync('./excel/stats.xlsx');
+    const workbook = isExsist ? XLSX.readFile('./excel/stats.xlsx') : XLSX.utils.book_new()
     const now = moment();
     const worksheet = XLSX.utils.json_to_sheet(data);
     XLSX.utils.book_append_sheet(

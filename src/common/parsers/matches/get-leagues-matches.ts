@@ -18,7 +18,10 @@ export const getLeaguesMatches = async (
         let label = `${numLink}/${totalLinks} Parse link ${link}`
         console.time(label);
         let matchesLeague = await getAllMatches(page, link)
-            .catch((_) => false);
+            .catch((err) => {
+                console.log(err)
+                return false
+            });
         if (!matchesLeague) {
             errorsLeagues.push(link)
             console.log(error(`${numLink}/${totalLinks} Error with link ${link}`))

@@ -207,8 +207,6 @@ export const getParseFootballMatch = async (page: Page, id: string): Promise<mat
 }
 
 export const getJsonFootball = (el: matchStat): jsonFootball => {
-    // @ts-ignore
-    // @ts-ignore
     let {
         id = '',
         countryCupRound: {country, league, round, roundTwo, roundThree},

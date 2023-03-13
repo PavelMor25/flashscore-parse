@@ -21,7 +21,10 @@ export const getAllStats = async <F extends Function, J extends Function, T>(
         console.time(label);
         let match: T = await parseFunc(page, id)
             .then((data: T) => jsonFunc(data))
-            .catch(() => false);
+            .catch((er: Error) => {
+                console.log(er)
+                return false
+            });
         if (!match) {
             errorsMatch.push(id)
             console.log(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
