@@ -1,4 +1,4 @@
-export const F00TBALL_SELECTORS = {
+export const MATCHES_SELECTORS = {
     'NAME_TEAMS': 'a.participant__participantName',
     'LEAGUE': '.tournamentHeader__country',
     'SCORES': {

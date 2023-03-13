@@ -1,4 +1,5 @@
 import {CliCommandInterface} from "../cli-commands/cli-command.interface.js";
+import fs from "fs";
 
 type ParsedCommand = {
     [key: string]: string[]
@@ -30,6 +31,19 @@ export default class CliApplication {
             acc[cliCommand.name] = cliCommand;
             return acc;
         }, this.commands);
+    }
+
+    public checkUsesDir(): void {
+        const folders = ['./errors','./excel'];
+        for (let folder of folders) {
+            try {
+                if (!fs.existsSync(folder)) {
+                    fs.mkdirSync(folder);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
     }
 
     public getCommand(commandName: string): CliCommandInterface {

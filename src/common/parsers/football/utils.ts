@@ -1,10 +1,9 @@
 import {Page} from "puppeteer";
-import {F00TBALL_SELECTORS} from "../../../constants/selectors.js";
-import {getContent} from "../../../utils/utils.js";
+import {MATCHES_SELECTORS} from "../../../constants/selectors.js";
 import {matchStat} from "../../../types/football/match-stats.type.js";
 import {incidents} from "../../../types/football/incidents.type.js";
 import {jsonFootball} from "../../../types/football/json-football.type.js";
-import moment from "moment";
+import {getCommonInfoMatch, getContent} from "../utils/utils.js";
 
 const getGoalsCards = async (page: Page): Promise<incidents> => {
     const {
@@ -13,7 +12,7 @@ const getGoalsCards = async (page: Page): Promise<incidents> => {
             TYPE_INCIDENT,
             TIME_INCIDENT
         }
-    } = F00TBALL_SELECTORS
+    } = MATCHES_SELECTORS
 
     let rowsPeriod = await page.$$(ROWS);
     let goalTimeTeamA = [];
@@ -81,19 +80,16 @@ const getGoalsCards = async (page: Page): Promise<incidents> => {
     }
 }
 
-export const getParseMatch = async (page: Page, id: string): Promise<matchStat> => {
+export const getParseFootballMatch = async (page: Page, id: string): Promise<matchStat> => {
     const {
         NAME_TEAMS,
-        LEAGUE,
         SCORES,
-        DATE,
         PERIODS,
-        ODDS,
         TABS_WITH_FULL_STAT,
         LINK_FULL_STATS,
         TABLE_FULL_STATS,
         FULL_STATS
-    } = F00TBALL_SELECTORS;
+    } = MATCHES_SELECTORS;
 
     let matchStat: matchStat;
 
@@ -102,33 +98,14 @@ export const getParseMatch = async (page: Page, id: string): Promise<matchStat> 
     await page.goto(link);
     await page.waitForSelector(NAME_TEAMS);
 
-    // Get Country, league and round
-    let country = await page.$eval(LEAGUE, (el) => el.textContent);
-    let cupCountry = [
-        country!.split(':')[0],
-        ...country!
-            .trimStart()
-            .split(':')[1]
-            .split(' - ')
-    ];
-
-    // Get total score
-    let homeScore = await page.$eval(SCORES.HOME, (el) => el.textContent);
-    let awayScore = await page.$eval(SCORES.AWAY, (el) => el.textContent);
+    const common = await getCommonInfoMatch(page);
 
     let detailScore = await page.$(SCORES.DETAIL_SCORE);
     if (detailScore) {
-        homeScore = await detailScore.$eval(SCORES.HOME_D, (el) => el.textContent);
-        awayScore = await detailScore.$eval(SCORES.AWAY_D, (el) => el.textContent);
+        common.homeScore = await detailScore.$eval(SCORES.HOME_D, (el) => el.textContent);
+        common.awayScore = await detailScore.$eval(SCORES.AWAY_D, (el) => el.textContent);
     }
 
-    // Get date match
-    // let time = await page.$eval(DATE, (el) => el.textContent!.split(' '));
-    let time = await page.$eval(DATE, (el) => el.textContent);
-    let dateTime = moment(time, 'DD.MM.YYYY kk:mm').toDate();
-
-    // Get Name teams
-    let pair = await getContent(page, NAME_TEAMS);
 
     // Get stats periods
     let halfName = await getContent(page,PERIODS.NAME);
@@ -150,36 +127,34 @@ export const getParseMatch = async (page: Page, id: string): Promise<matchStat> 
     // Get goals and red cards
     const incidents = await getGoalsCards(page);
 
-    // Get odds
-    await page.waitForSelector(ODDS.ODDS_ROW, {timeout: 5000}).catch(_ => false);
-    // @ts-ignore
-    let oddsName = await page.$eval(ODDS.NAME, (el) => el.title).catch((_)=>null);
-    let oddsValue = await getContent(page, ODDS.VALUE);
+    let rounds = common.league?.split(' - ');
 
     // Create obj before full stats
     matchStat = {
         id,
         countryCupRound: {
-            country: cupCountry[0],
-            league: cupCountry[1],
-            round: cupCountry[2]
+            country: common.country ?? '',
+            league: rounds[0],
+            round: rounds[1],
+            roundTwo: rounds[2],
+            roundThree: rounds[3]
         },
         score: {
-            home: Number(homeScore),
-            away: Number(awayScore)
+            home: Number(common.homeScore),
+            away: Number(common.awayScore)
         },
-        dateTime,
+        dateTime: common.dateTime,
         teams: {
-            home: pair[0] ?? '',
-            away: pair[1] ?? ''
+            home: common.pair[0] ?? '',
+            away: common.pair[1] ?? ''
         },
         periods,
         incidents,
         odds: {
-            name: oddsName,
-            home: oddsValue[0],
-            draw: oddsValue[1],
-            away: oddsValue[2]
+            name: common.oddsName ?? '',
+            home: common.oddsValue[0],
+            draw: common.oddsValue[1],
+            away: common.oddsValue[2]
         }
     };
 
@@ -232,11 +207,9 @@ export const getParseMatch = async (page: Page, id: string): Promise<matchStat> 
 }
 
 export const getJsonFootball = (el: matchStat): jsonFootball => {
-    // @ts-ignore
-    // @ts-ignore
     let {
         id = '',
-        countryCupRound: {country, league, round},
+        countryCupRound: {country, league, round, roundTwo, roundThree},
         score: {home, away},
         dateTime,
         teams: {home: homeTeam, away: awayTeam},
@@ -284,7 +257,9 @@ export const getJsonFootball = (el: matchStat): jsonFootball => {
         "id": id,
         "country": country,
         "league": league,
-        "round": round,
+        "r1": round,
+        "r2": roundTwo,
+        "r3": roundThree,
         "S1": home,
         "S2": away,
         "SD":away - home,
