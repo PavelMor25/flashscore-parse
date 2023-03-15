@@ -45,8 +45,8 @@ const getGoals = async (page: Page): Promise<goals> => {
         fgt: goalTeam[0],
         fgm: [homeMin,awayMin][goalTeam[0]-1][0],
         goalTeam: goalTeam.join(''),
-        homeMin: homeMin.join(''),
-        awayMin: awayMin.join('')
+        homeMin: homeMin.join(';'),
+        awayMin: awayMin.join(';')
     }
 }
 
@@ -99,8 +99,11 @@ export const getParseHockeyMatch = async (page: Page, id: string): Promise<match
 
     const exData = await getExData(page);
 
-    const leg = await page.$eval('.infoBox__info', el => el.textContent?.split(' leg')[0])
-        .catch(_=>'');
+    const leg = await page.$eval('.infoBox__info', el => {
+        return el.textContent?.includes('leg')
+            ? el.textContent?.split(' leg')[0]
+            : '';
+    }).catch(_=>'');
 
     let rounds = common.league?.split(' - ');
 
@@ -209,7 +212,7 @@ export const getJsonHockey = (el: matchStat): jsonHockey => {
         },
         exData: {
             Venue = '',
-            Attendance = ''
+            Attendance = 0
         } = {},
         odds: {name: nameOdds = '-', home: homeOdds = 0, draw = 0, away: awayOdds = 0},
         stats: {
@@ -257,8 +260,8 @@ export const getJsonHockey = (el: matchStat): jsonHockey => {
         "2P2": Number(sPerAway),
         "3P1": Number(tPerHome),
         "3P2": Number(tPerAway),
-        "Pin1": Number(Penalties ? Penalties.home : 0),
-        "Pin2": Number(Penalties ? Penalties.away : 0),
+        "Pen1": Number(Penalties ? Penalties.home : 0),
+        "Pen2": Number(Penalties ? Penalties.away : 0),
         "1st Goal": fgt,
         "1GM": fgm,
         "GS": goalTeam,
@@ -299,7 +302,7 @@ export const getJsonHockey = (el: matchStat): jsonHockey => {
         "ENG1": Number(homeENG),
         "ENG2": Number(awayENG),
         "Venue": Venue,
-        "Attendance": Attendance,
+        "Attendance": Number(Attendance),
     });
 }
 
