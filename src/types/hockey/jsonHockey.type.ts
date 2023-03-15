@@ -22,8 +22,8 @@
     "2P2": number,
     "3P1": number,
     "3P2": number,
-    "Pin1": number,
-    "Pin2": number,
+    "Pen1": number,
+    "Pen2": number,
     "1st Goal": number,
     "1GM": number,
     "GS": string,
@@ -64,5 +64,5 @@
     "ENG1": number,
     "ENG2": number,
      "Venue": string,
-     "Attendance": string,
+     "Attendance": number,
 }
