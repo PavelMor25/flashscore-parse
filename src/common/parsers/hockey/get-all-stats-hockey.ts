@@ -1,6 +1,6 @@
 import {Page} from "puppeteer";
 import {matches} from "../../../types/leagues/matches.type.js";
-import {jsonHockey} from "../../../types/hockey/jsonHockey.type.js";
+import {jsonHockey} from "../../../types/hockey/json-hockey.type";
 import {getAllStats} from "../matches/get-all-stats.js";
 import {getJsonHockey, getParseHockeyMatch} from "./utils.js";
 

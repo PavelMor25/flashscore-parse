@@ -1,12 +1,12 @@
 import {Page} from "puppeteer";
-import {goals} from "../../../types/hockey/goals.js";
+import {incidents} from "../../../types/hockey/incidents";
 import {matchStat} from "../../../types/hockey/match-stats.type.js";
 import {MATCHES_SELECTORS} from "../../../constants/selectors.js";
 import {getCommonInfoMatch, getContent, getExData} from "../utils/utils.js";
-import {jsonHockey} from "../../../types/hockey/jsonHockey.type.js";
+import {jsonHockey} from "../../../types/hockey/json-hockey.type";
 
 
-const getGoals = async (page: Page): Promise<goals> => {
+const getGoals = async (page: Page): Promise<incidents> => {
     const rowsInc = await page.$$('.smv__verticalSections.section > div');
     const goalTeam = [];
     const homeMin = [];
@@ -94,7 +94,7 @@ export const getParseHockeyMatch = async (page: Page, id: string): Promise<match
         };
     }
 
-    // Get goals and red cards
+    // Get incidentsType and red cards
     const incidents = await getGoals(page);
 
     const exData = await getExData(page);
