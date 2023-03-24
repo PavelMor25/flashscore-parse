@@ -22,7 +22,7 @@ const getGoalsCards = async (page: Page): Promise<incidents> => {
     let goals = []
     let firstTeamCard = 0;
 
-    // Sort another incidents except for (goals/red-yellow-card/red card)
+    // Sort another incidents except for (incidentsType/red-yellow-card/red card)
     for (let row of rowsPeriod) {
         let incident = await row.$eval(
             TYPE_INCIDENT,
@@ -124,7 +124,7 @@ export const getParseFootballMatch = async (page: Page, id: string): Promise<mat
         };
     }
 
-    // Get goals and red cards
+    // Get incidentsType and red cards
     const incidents = await getGoalsCards(page);
 
     let rounds = common.league?.split(' - ');

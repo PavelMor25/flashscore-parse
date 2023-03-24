@@ -15,7 +15,7 @@ export const getExData = async (page: Page): Promise<exDataType> => {
     for (let row of rowsDData) {
         let name = await row.$eval('.mi__item__name', el => el.textContent?.replace(':',''));
         // @ts-ignore
-        exData[name] =  await row.$eval('.mi__item__val', el => el.textContent);
+        exData[name] =  await row.$eval('.mi__item__val', el => el.textContent.replace(' ', ''));
     }
 
     return exData

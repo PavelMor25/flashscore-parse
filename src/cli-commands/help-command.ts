@@ -17,7 +17,8 @@ export default class HelpCommand implements CliCommandInterface {
                                      (<e>: не обязательный параметр -e для парсинга ошибок с прошлого парсера)
             Типы:
                 -f  #Football
-                
+                -h  #Hockey
+                -am #Amr.Football
         `);
     }
 }

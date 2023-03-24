@@ -16,8 +16,6 @@ myManager.registerCommands([
     new ParseCommand,
 ]);
 
-// myManager.checkUsesDir();
-
 console.log(`
     Добро пожаловать в Flashscore parser.
     Для информации о списке команд введите --help.
