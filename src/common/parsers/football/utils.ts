@@ -129,6 +129,12 @@ export const getParseFootballMatch = async (page: Page, id: string): Promise<mat
 
     let rounds = common.league?.split(' - ');
 
+    const leg = await page.$eval('.infoBox__info', el => {
+        return el.textContent?.includes('leg')
+            ? el.textContent?.split(' leg')[0]
+            : '';
+    }).catch(_=>'');
+
     // Create obj before full stats
     matchStat = {
         id,
@@ -137,7 +143,8 @@ export const getParseFootballMatch = async (page: Page, id: string): Promise<mat
             league: rounds[0],
             round: rounds[1],
             roundTwo: rounds[2],
-            roundThree: rounds[3]
+            roundThree: rounds[3],
+            leg
         },
         score: {
             home: Number(common.homeScore),
@@ -209,7 +216,7 @@ export const getParseFootballMatch = async (page: Page, id: string): Promise<mat
 export const getJsonFootball = (el: matchStat): jsonFootball => {
     let {
         id = '',
-        countryCupRound: {country, league, round, roundTwo, roundThree},
+        countryCupRound: {country, league, round, roundTwo, roundThree, leg},
         score: {home, away},
         dateTime,
         teams: {home: homeTeam, away: awayTeam},
@@ -258,8 +265,9 @@ export const getJsonFootball = (el: matchStat): jsonFootball => {
         "country": country,
         "league": league,
         "r1": round,
-        "r2": roundTwo,
-        "r3": roundThree,
+        "r2": roundTwo ?? '',
+        "r3": roundThree ?? '',
+        "leg": leg ?? '',
         "S1": home,
         "S2": away,
         "SD":away - home,
