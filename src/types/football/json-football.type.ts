@@ -4,7 +4,8 @@ export type jsonFootball = {
     "league": string,
     "r1": string,
     "r2"?: string,
-    "r3"?: string
+    "r3"?: string,
+    "leg"?: string,
     "S1": number,
     "S2": number,
     "SD": number,
