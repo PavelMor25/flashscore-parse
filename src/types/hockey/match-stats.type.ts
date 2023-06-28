@@ -7,7 +7,7 @@ import {odds} from "../matches/odds.type.js";
 import {incidents} from "./incidents";
 import {exDataType} from "../matches/exData.type.js";
 
-export type matchStat = {
+export type hockeyMatchStat = {
     id: string,
     countryCupRound: countryCupRound,
     teams: teams,

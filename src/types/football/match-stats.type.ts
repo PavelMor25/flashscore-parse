@@ -6,7 +6,7 @@ import {countryCupRound} from "../matches/country-cup-round.type";
 import {stats} from "./stats.type.js";
 import {odds} from "../matches/odds.type";
 
-export type matchStat = {
+export type footballMatchStat = {
     id: string,
     countryCupRound: countryCupRound,
     teams: teams,
