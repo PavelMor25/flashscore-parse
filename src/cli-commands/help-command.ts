@@ -18,7 +18,7 @@ export default class HelpCommand implements CliCommandInterface {
             Типы:
                 -f  #Football
                 -h  #Hockey
-                -am #Amr.Football
+                -af #Amr.Football
         `);
     }
 }

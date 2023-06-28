@@ -10,10 +10,10 @@ export const getAllStats = async <F extends Function, J extends Function, T>(
     matches: string[],
     parseFunc: F,
     jsonFunc: J,
-    matchesStats: T | [] = [],
+    matchesStats: T[] | [] = [],
     repeat:boolean = true
 ): Promise<matches<T>> => {
-    let errorsMatch = [];
+    let errorsMatches = [];
     let numMatch = 1;
     const matchesTotal = matches.length;
     for (let id of matches) {
@@ -26,7 +26,7 @@ export const getAllStats = async <F extends Function, J extends Function, T>(
                 return false
             });
         if (!match) {
-            errorsMatch.push(id)
+            errorsMatches.push(id)
             console.log(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
             console.timeEnd(label);
             numMatch++;
@@ -39,25 +39,24 @@ export const getAllStats = async <F extends Function, J extends Function, T>(
     }
 
     let errorIteration = 1
-    while (errorsMatch.length && errorIteration <= 5 && repeat) {
+    while (errorsMatches.length && errorIteration <= 5 && repeat) {
         console.log(other(`Try parse errors. try: ${errorIteration}`));
         let matches: matches<T> = await getAllStats<F,J,T>(
                                                         page,
-                                                        errorsMatch,
+                                                        errorsMatches,
                                                         parseFunc,
                                                         jsonFunc,
                                                         matchesStats,
                                                   false
                                                         );
         errorIteration++;
-        errorsMatch = matches.errorsMatch;
+        errorsMatches = matches.errorsMatches;
         matchesStats = matches.matchesStats;
     }
 
     return {
-        // @ts-ignore
         matchesStats,
-        errorsMatch
+        errorsMatches
     }
 }
 

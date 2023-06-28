@@ -34,7 +34,7 @@ export const MATCHES_SELECTORS = {
 };
 
 export const MATCH_SELECTORS = {
-    'RESULT_TABLE': '.event--results',
+    'RESULT_TABLE': '.event.event--results',
     'BTN_SHOW_MORE': 'a.event__more.event__more--static',
     'MATCH_LINE': '.event__match.event__match--static.event__match--twoLine',
 }

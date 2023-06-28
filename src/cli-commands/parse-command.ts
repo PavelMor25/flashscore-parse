@@ -1,16 +1,20 @@
 import {CliCommandInterface} from "./cli-command.interface.js";
-import puppeteer, {Page} from "puppeteer";
+import puppeteer from "puppeteer";
 import TsvFileReader from "../common/file-reader/tsv-file-reader.js";
 import chalk from "chalk";
 import {errorsWriter} from "../common/errors-writer/errors-writer.js";
-import {getLeaguesMatches} from "../common/parsers/matches/get-leagues-matches.js";
-import {getAllStatsFootball} from "../common/parsers/football/get-all-stats-football.js";
-import {getAllStatsHockey} from "../common/parsers/hockey/get-all-stats-hockey.js";
-import {jsonHockey} from "../types/hockey/json-hockey.type.js";
+import {getLeaguesMatches} from "../common/parsers/link-parser/get-leagues-matches.js";
 import {jsonFootball} from "../types/football/json-football.type.js";
-import {getAllStatsAmFootball} from "../common/parsers/am-football/get-all-stats-am-football.js";
-import {jsonAmFootball} from "../types/am-football/json-am-football.type.js";
 import ExcelWriter from "../common/excel-writer/excel-writer.js";
+import ParserFootball from "../common/parsers/matches-parser/football/parser-football.js";
+import {ParserMatchInterface} from "../common/parsers/matches-parser/parser-match.interface.js";
+import {footballMatchStat} from "../types/football/match-stats.type.js";
+import ParserAmFootball from "../common/parsers/matches-parser/am-football/parser-am-football.js";
+import {amFootballMatchStat} from "../types/am-football/match-stats.type.js";
+import {jsonAmFootball} from "../types/am-football/json-am-football.type.js";
+import ParserHockey from "../common/parsers/matches-parser/hockey/parser-hockey.js";
+import {hockeyMatchStat} from "../types/hockey/match-stats.type.js";
+import {jsonHockey} from "../types/hockey/json-hockey.type.js";
 
 type ParseType = {
     [key: string]: string
@@ -49,23 +53,24 @@ export default class ParseCommand implements CliCommandInterface {
         this.linksErrors = []
     }
 
-    private parseMatches = async <F extends Function, T> (
+    private parseMatches = async <M,J,F extends ParserMatchInterface<M, J>> (
         typeMatch: string,
-        parseFunc: F,
-        page: Page,
+        parser: F,
         link: string): Promise<void> => {
         console.log(other(`Start parse ${typeMatch} matchesType`));
         console.time(`Parse matchesType`);
-        let stats = await parseFunc(page, this.linksMatches);
+        let stats = await parser.parseAllMatches();
         console.timeEnd(`Parse matchesType`);
 
+        console.log(stats.matchesStats.length)
+
         console.log(other(`Write to excel`));
-        await this.excelWriter.write<T>(stats.matchesStats);
+        await this.excelWriter.write<J>(stats.matchesStats);
         console.log(success(`Excel ready`));
 
-        if (stats.errorsMatch.length) {
+        if (stats.errorsMatches.length) {
             console.log(other(`Write errors`));
-            await errorsWriter(typeMatch, stats.errorsMatch);
+            await errorsWriter(typeMatch, stats.errorsMatches);
         }
 
         console.log(`
@@ -73,7 +78,7 @@ export default class ParseCommand implements CliCommandInterface {
                     ----- Done -----
                     ${other(`Total matches: ${this.linksMatches.length}`)}
                     ${success(`Matches parse: ${stats.matchesStats.length}`)}
-                    ${error(`Errors: ${stats.errorsMatch.length} => ${stats.errorsMatch}`)}
+                    ${error(`Errors: ${stats.errorsMatches.length} => ${stats.errorsMatches}`)}
                     ----- End -----
                 `);
     }
@@ -118,15 +123,24 @@ export default class ParseCommand implements CliCommandInterface {
             console.log(success('Total matchesType to parse:', this.linksMatches.length));
             switch (type) {
                 case '-f': {
-                    await this.parseMatches<typeof getAllStatsFootball, jsonFootball>(typeFull, getAllStatsFootball, page, league);
+                    let parserFootball = new ParserFootball(page, this.linksMatches)
+                    await this.parseMatches
+                        <footballMatchStat, jsonFootball, ParserFootball>
+                        (typeFull, parserFootball, league);
                     break;
                 }
                 case '-h': {
-                    await this.parseMatches<typeof getAllStatsHockey, jsonHockey>(typeFull, getAllStatsHockey, page, league);
+                    let parserHockey = new ParserHockey(page, this.linksMatches);
+                    await this.parseMatches
+                        <hockeyMatchStat, jsonHockey, ParserHockey>
+                        (typeFull, parserHockey, league);
                     break;
                 }
                 case '-af': {
-                    await this.parseMatches<typeof getAllStatsAmFootball, jsonAmFootball>(typeFull, getAllStatsAmFootball, page, league);
+                    let parserAmFootball = new ParserAmFootball(page, this.linksMatches);
+                    await this.parseMatches
+                        <amFootballMatchStat, jsonAmFootball, ParserAmFootball>
+                        (typeFull, parserAmFootball, league);
                     break;
                 }
             }
