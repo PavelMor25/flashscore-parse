@@ -23,9 +23,9 @@ export const MATCHES_SELECTORS = {
         'NAME': '.bookmaker a',
         'VALUE': '.oddsValueInner'
     },
-    'TABS_WITH_FULL_STAT': '.tabs.tabs__detail--nav',
+    'TABS_WITH_FULL_STAT': '.filter.detail__filter',
     'LINK_FULL_STATS': 'a[href="#/match-summary/match-statistics"]',
-    'TABLE_FULL_STATS': '.subTabs.tabs__detail--sub + .section',
+    'TABLE_FULL_STATS': '.subFilter.detail__subFilter.detail__subFilter--stats + .section',
     'FULL_STATS': {
         'NAME': '.stat__categoryName',
         'HOME': '.stat__homeValue',

@@ -15,6 +15,9 @@ import {jsonAmFootball} from "../types/am-football/json-am-football.type.js";
 import ParserHockey from "../common/parsers/matches-parser/hockey/parser-hockey.js";
 import {hockeyMatchStat} from "../types/hockey/match-stats.type.js";
 import {jsonHockey} from "../types/hockey/json-hockey.type.js";
+import ParserBaseball from "../common/parsers/matches-parser/baseball/parser-baseball.js";
+import {baseballMatchStat} from "../types/baseball/match-stats.type.js";
+import {jsonBaseball} from "../types/baseball/json-baseball.type.js";
 
 type ParseType = {
     [key: string]: string
@@ -23,7 +26,8 @@ type ParseType = {
 const parseName: ParseType = {
     '-f': 'football',
     '-h': 'hockey',
-    '-af': 'aFootball'
+    '-af': 'aFootball',
+    '-bb': 'baseball'
 }
 
 const success = chalk.green.bold;
@@ -61,8 +65,6 @@ export default class ParseCommand implements CliCommandInterface {
         console.time(`Parse matchesType`);
         let stats = await parser.parseAllMatches();
         console.timeEnd(`Parse matchesType`);
-
-        console.log(stats.matchesStats.length)
 
         console.log(other(`Write to excel`));
         await this.excelWriter.write<J>(stats.matchesStats);
@@ -141,6 +143,13 @@ export default class ParseCommand implements CliCommandInterface {
                     await this.parseMatches
                         <amFootballMatchStat, jsonAmFootball, ParserAmFootball>
                         (typeFull, parserAmFootball, league);
+                    break;
+                }
+                case '-bb': {
+                    let parserBaseball = new ParserBaseball(page, this.linksMatches);
+                    await this.parseMatches
+                        <baseballMatchStat, jsonBaseball, ParserBaseball>
+                        (typeFull, parserBaseball, league);
                     break;
                 }
             }
