@@ -19,6 +19,8 @@ export default class HelpCommand implements CliCommandInterface {
                 -f  #Football
                 -h  #Hockey
                 -af #Amr.Football
+                -bb #Baseball
+                -b #Basketball
         `);
     }
 }
