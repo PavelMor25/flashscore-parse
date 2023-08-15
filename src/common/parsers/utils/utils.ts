@@ -6,7 +6,7 @@ import {exDataType} from "../../../types/matches/exData.type";
 
 export const getContent = async (page: Page, selector: string) => {
     return await page.$$eval(selector, (hds) => hds.map((el) => el.textContent));
-}
+};
 
 export const getExData = async (page: Page): Promise<exDataType> => {
     const dData = await page.$('.mi__data');
@@ -19,7 +19,8 @@ export const getExData = async (page: Page): Promise<exDataType> => {
     }
 
     return exData
-}
+};
+
 export const getCommonInfoMatch = async (page: Page): Promise<common> => {
     const {
         NAME_TEAMS,
@@ -59,4 +60,11 @@ export const getCommonInfoMatch = async (page: Page): Promise<common> => {
         oddsName,
         oddsValue
     }
+};
+
+export const replacerStatName = (str: string): string => {
+    if ('0123456789'.includes(str)) {
+        return ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'][+str];
+    }
+    return '';
 }
