@@ -77,4 +77,6 @@ export type jsonBasketball = {
     "PF2": number,
     "TF1": number,
     "TF2": number,
+    "Venue": string,
+    "Attendance": number
 }
