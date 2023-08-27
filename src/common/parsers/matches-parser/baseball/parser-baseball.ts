@@ -61,7 +61,6 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
             pitchers: {pitHome, pitAway},
             incidents,
             exData: {
-                Referee = '',
                 Venue = '',
                 Attendance = ''
             } = {},

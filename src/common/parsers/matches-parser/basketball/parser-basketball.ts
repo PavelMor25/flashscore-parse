@@ -178,7 +178,6 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
         const page = this.page;
         const {
             NAME_TEAMS,
-            SCORES,
             TABS_WITH_FULL_STAT,
             LINK_FULL_STATS,
             TABLE_FULL_STATS,

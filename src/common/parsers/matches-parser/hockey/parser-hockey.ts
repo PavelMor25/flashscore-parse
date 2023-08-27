@@ -66,7 +66,6 @@ export default class ParserHockey implements ParserMatchInterface<hockeyMatchSta
         const page = this.page;
         const {
             NAME_TEAMS,
-            SCORES,
             PERIODS,
             TABS_WITH_FULL_STAT,
             LINK_FULL_STATS,
