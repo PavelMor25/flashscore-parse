@@ -3,6 +3,10 @@ export type stats = {
         home: string,
         away: string
     },
+    ExpectedGoals?: {
+        home: string,
+        away: string
+    }
     GoalAttempts?: {
         home: string,
         away: string

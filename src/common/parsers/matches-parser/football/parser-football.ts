@@ -4,7 +4,7 @@ import {MATCHES_SELECTORS} from "../../../../constants/selectors.js";
 import {footballMatchStat} from "../../../../types/football/match-stats.type.js";
 import {incidents} from "../../../../types/football/incidents.type.js";
 import {jsonFootball} from "../../../../types/football/json-football.type.js";
-import {getCommonInfoMatch, getContent} from "../../utils/utils.js";
+import {getCommonInfoMatch, getContent, getExData} from "../../utils/utils.js";
 import {matches} from "../../../../types/leagues/matches.type.js";
 import chalk from "chalk";
 
@@ -41,7 +41,7 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
                 TYPE_INCIDENT,
                 el => {
                     // @ts-ignore
-                    return el.className.baseVal;
+                    return el.className.baseVal ? el.className.baseVal : el.dataset.testid;
                 }
             ).catch((_) => false);
 
@@ -56,9 +56,11 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
             // get team and time incident
             let team = await row.evaluate((el) => el.className);
             let timeInc = await row.$eval(TIME_INCIDENT, el => el.textContent);
+            let subInc = await row.$eval('.smv__subIncident',el => el.textContent?.includes('Penalty')).catch(_ => false);
+
 
             // Check team goal (home or away)
-            if (incident.search('soccer') !== -1) {
+            if (incident.search('soccer') !== -1 && !subInc) {
                 if (!timeInc!.match('\'')) {
                     continue
                 }
@@ -141,6 +143,8 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
         // Get incidentsType and red cards
         const incidents = await this.getGoalsCards(page);
 
+        const exData = await getExData(page);
+
         let rounds = common.league?.split(' - ');
 
         const leg = await page.$eval('.infoBox__info', el => {
@@ -176,7 +180,8 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
                 home: common.oddsValue[0],
                 draw: common.oddsValue[1],
                 away: common.oddsValue[2]
-            }
+            },
+            exData
         };
 
         // Check full stats
@@ -258,8 +263,14 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
                 cardTimeTeamB,
                 firstTeamCard
             },
+            exData: {
+                Referee = '',
+                Venue = '',
+                Attendance = 0
+            } = {},
             odds: {name: nameOdds = '-', home: homeOdds = 0, draw = 0, away: awayOdds = 0},
             stats: {
+                ExpectedGoals: {home: homeEG = '0', away: awayEG = '0'} = {},
                 BallPossession: {home: homeBP = '0', away: awayBP = '0'} = {},
                 GoalAttempts: {home: homeGA = 0, away: awayGA = 0} = {},
                 ShotsonGoal: {home: homeSOG = 0, away: awaySOG = 0} = {},
@@ -288,29 +299,35 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
             "r2": roundTwo ?? '',
             "r3": roundThree ?? '',
             "leg": leg ?? '',
-            "S1": home,
-            "S2": away,
-            "SD":away - home,
-            "ET": Penalties ? 'SO' : ExtraTime ? 'OT' : '-',
             "date": dateTime,
             "time": dateTime,
             "home": homeTeam,
             "away": awayTeam,
+            "S1": home,
+            "S2": away,
+            "SD":away - home,
+            "ET": Penalties ? 'SO' : ExtraTime ? 'OT' : '-',
             "1H1": Number(fHalfHome),
             "1H2": Number(fHalfAway),
             "2H1": Number(sHalfHome),
             "2H2": Number(sHalfAway),
-            "FGT": Number(goals[0] ?? 0),
-            "GPM": goals.join(''),
-            "TG1": goalTimeTeamA.join('; '),
-            "TG2": goalTimeTeamB.join('; '),
-            "FC": Number(firstTeamCard),
+            "ET1": Number(ExtraTime ? ExtraTime.home : 0),
+            "ET2": Number(ExtraTime ? ExtraTime.away : 0),
+            "P1": Number(Penalties ? Penalties.home : 0),
+            "P2": Number(Penalties ? Penalties.away : 0),
+            "firstG": Number(goals[0] ?? 0),
+            "firstGM": goals.join(''),
+            "GM1": goalTimeTeamA.join('; '),
+            "GM2": goalTimeTeamB.join('; '),
+            "firstRC": Number(firstTeamCard),
             "RCT1": cardTimeTeamA.join('; '),
             "RCT2": cardTimeTeamB.join('; '),
             "Bet": nameOdds,
             "K1": Number(homeOdds),
             "x": Number(draw),
             "K2": Number(awayOdds),
+            "xG1": Number(homeEG),
+            "xG2": Number(awayEG),
             "BP1": Number(homeBP.replace('%','')),
             "BP2": Number(awayBP.replace('%','')),
             "GA1": Number(homeGA),
@@ -346,7 +363,10 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
             "TA1": Number(homeTA),
             "TA2": Number(awayTA),
             "DA1": Number(homeDA),
-            "DA2": Number(awayDA)
+            "DA2": Number(awayDA),
+            "Referee": Referee,
+            "Venue": Venue,
+            "Attendance": Number(Attendance),
         });
     }
 
@@ -365,6 +385,7 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
                 console.timeEnd(label);
                 numMatch++;
             } catch (err) {
+                console.log(err)
                 errorsMatches.push(id)
                 console.log(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
                 console.timeEnd(label);
