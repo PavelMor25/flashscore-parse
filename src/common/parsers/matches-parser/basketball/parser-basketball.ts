@@ -2,7 +2,7 @@ import {ParserMatchInterface} from "../parser-match.interface.js";
 import {Page} from "puppeteer";
 import {MATCHES_SELECTORS} from "../../../../constants/selectors.js";
 import {incidents} from "../../../../types/basketball/incidents.type.js";
-import {getCommonInfoMatch, getContent, replacerStatName} from "../../utils/utils.js";
+import {getCommonInfoMatch, getContent, replacerStatName, getExData} from "../../utils/utils.js";
 import {matches} from "../../../../types/leagues/matches.type.js";
 import chalk from "chalk";
 import { jsonBasketball } from "../../../../types/basketball/json-basketball.type.js";
@@ -178,7 +178,6 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
         const page = this.page;
         const {
             NAME_TEAMS,
-            SCORES,
             TABS_WITH_FULL_STAT,
             LINK_FULL_STATS,
             TABLE_FULL_STATS,
@@ -193,13 +192,6 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
         await page.waitForSelector(NAME_TEAMS);
 
         const common = await getCommonInfoMatch(page);
-
-        let detailScore = await page.$(SCORES.DETAIL_SCORE);
-        if (detailScore) {
-            common.homeScore = await detailScore.$eval(SCORES.HOME_D, (el) => el.textContent);
-            common.awayScore = await detailScore.$eval(SCORES.AWAY_D, (el) => el.textContent);
-        }
-
 
         // Get stats periods
         let periods: periods = {}
@@ -228,6 +220,8 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
                 : '';
         }).catch(_=>'');
 
+        const exData = await getExData(page);
+
         const incidents = await this.getIncidents(page);
 
         // Create obj before full stats
@@ -255,7 +249,8 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
                 name: common.oddsName ?? '',
                 home: common.oddsValue[0],
                 away: common.oddsValue[1]
-            }
+            },
+            exData
         };
 
         // Check full stats
@@ -324,6 +319,10 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
                 pointAdvantage: {homeAdvantage, awayAdvantage},
                 topPlayers: {homePlayer, awayPlayer},
             },
+            exData: {
+                Venue = '',
+                Attendance = ''
+            } = {},
             odds: {name: nameOdds = '-', home: homeOdds = 0, away: awayOdds = 0},
             stats: {
                 FieldGoalsAttempted: {home: homeFGA = '0', away: awayFGA = '0'} = {},
@@ -356,14 +355,14 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
             "r1": round,
             "r2": roundTwo ?? '',
             "leg": leg ?? '',
-            "S1": home,
-            "S2": away,
-            "SD":away - home,
-            "ET": QO.home + QO.away > 0 ? 'OT' : '',
             "date": dateTime,
             "time": dateTime,
             "home": homeTeam,
             "away": awayTeam,
+            "S1": home,
+            "S2": away,
+            "SD":away - home,
+            "ET": QO.home + QO.away > 0 ? 'OT' : '',
             "Bet": nameOdds,
             "K1": Number(homeOdds),
             "K2": Number(awayOdds),
@@ -428,6 +427,8 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
             "PF2": +awayPF,
             "TF1": +homeTF,
             "TF2": +awayTF,
+            "Venue": Venue,
+            "Attendance": Number(Attendance),
         });
     }
 

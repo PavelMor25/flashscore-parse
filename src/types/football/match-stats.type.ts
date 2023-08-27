@@ -5,6 +5,7 @@ import {score} from "../matches/score.type";
 import {countryCupRound} from "../matches/country-cup-round.type";
 import {stats} from "./stats.type.js";
 import {odds} from "../matches/odds.type";
+import {exDataType} from "../matches/exData.type";
 
 export type footballMatchStat = {
     id: string,
@@ -16,4 +17,5 @@ export type footballMatchStat = {
     incidents: incidents,
     odds: odds,
     stats?: stats
+    exData?: exDataType,
 }

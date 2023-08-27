@@ -65,7 +65,6 @@ export type jsonBaseball = {
     "AB2": number,
     "BA1": number,
     "BA2": number,
-    "Referee": string,
     "Venue": string,
     "Attendance": string
 }

@@ -211,7 +211,6 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
         const page = this.page
         const {
             NAME_TEAMS,
-            SCORES,
             PERIODS,
             TABS_WITH_FULL_STAT,
             LINK_FULL_STATS,
@@ -227,13 +226,6 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
         await page.waitForSelector(NAME_TEAMS);
 
         const common = await getCommonInfoMatch(page);
-
-        let detailScore = await page.$(SCORES.DETAIL_SCORE);
-        if (detailScore) {
-            common.homeScore = await detailScore.$eval(SCORES.HOME_D, (el) => el.textContent);
-            common.awayScore = await detailScore.$eval(SCORES.AWAY_D, (el) => el.textContent);
-        }
-
 
         // Get stats periods
         let halfName = await getContent(page,PERIODS.NAME);

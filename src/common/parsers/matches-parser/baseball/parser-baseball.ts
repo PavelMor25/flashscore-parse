@@ -46,7 +46,7 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
         return {
             "1stR": firstRunTeam,
             "1RI": firstRunIng,
-            "RS": runSq.join(';')
+            "RS": runSq.join('')
         }
     }
 
@@ -61,7 +61,6 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
             pitchers: {pitHome, pitAway},
             incidents,
             exData: {
-                Referee = '',
                 Venue = '',
                 Attendance = ''
             } = {},
@@ -149,11 +148,8 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
             "AB2": Number(awayA),
             "BA1": Number(homeBA),
             "BA2": Number(awayBA),
-            "Referee": Referee,
             "Venue": Venue,
             "Attendance": Attendance
-
-
         })
     }
 
@@ -236,8 +232,7 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
             odds: {
                 name: common.oddsName ?? '',
                 home: common.oddsValue[0],
-                draw: common.oddsValue[1],
-                away: common.oddsValue[2]
+                away: common.oddsValue[1]
             },
             exData
         };
