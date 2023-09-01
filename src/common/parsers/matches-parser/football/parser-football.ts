@@ -234,6 +234,7 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
             };
 
         }
+
         return matchStat;
     }
 
@@ -269,7 +270,7 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
             } = {},
             odds: {name: nameOdds = '-', home: homeOdds = 0, draw = 0, away: awayOdds = 0},
             stats: {
-                ExpectedGoalsxGExpectedGoalsxGthenumberofgoalsacertainteamorplayerisexpectedtoscorebasedonthequalityandnumberofshotstaken: {home: homeEG = '0', away: awayEG = '0'} = {},
+                ExpectedGoals: {home: homeEG = '0', away: awayEG = '0'} = {},
                 BallPossession: {home: homeBP = '0', away: awayBP = '0'} = {},
                 GoalAttempts: {home: homeGA = 0, away: awayGA = 0} = {},
                 ShotsonGoal: {home: homeSOG = 0, away: awaySOG = 0} = {},
@@ -375,7 +376,6 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
         matchesToParse: string[] = this.matches): Promise<matches<jsonFootball>> => {
         let errorsMatches = []
         let numMatch = 1;
-        matchesToParse = matchesToParse.slice(0,10)
         const matchesTotal = matchesToParse.length;
         for (let id of matchesToParse) {
             let label = `${numMatch}/${matchesTotal} Parse match ${id}`

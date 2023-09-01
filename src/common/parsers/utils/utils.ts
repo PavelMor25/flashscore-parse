@@ -4,8 +4,8 @@ import {MATCHES_SELECTORS} from "../../../constants/selectors.js";
 import {common} from "../../../types/matches/common.type";
 import {exDataType} from "../../../types/matches/exData.type";
 
-export const getContent = async (page: Page, selector: string, timeout = 15000) => {
-    return await page.$$eval(selector, (hds) => hds.map((el) => el.textContent), {timeout});
+export const getContent = async (page: Page, selector: string) => {
+    return await page.$$eval(selector, (hds) => hds.map((el) => el.textContent));
 };
 
 export const getExData = async (page: Page): Promise<exDataType> => {
