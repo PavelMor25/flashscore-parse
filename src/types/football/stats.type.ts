@@ -3,7 +3,7 @@ export type stats = {
         home: string,
         away: string
     },
-    ExpectedGoals?: {
+    ExpectedGoalsxGExpectedGoalsxGthenumberofgoalsacertainteamorplayerisexpectedtoscorebasedonthequalityandnumberofshotstaken?: {
         home: string,
         away: string
     }
