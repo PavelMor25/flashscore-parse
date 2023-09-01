@@ -192,7 +192,7 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
         // Get incidentsType and red cards
         const incidents = await this.getRuns(periods);
 
-        const pitchers = await getContent(page, '.smh__nbsp')
+        const pitchers = await getContent(page, '.smh__nbsp', 5000)
             .then((pits) => pits.map((el) => el?.split('.')[0]))
 
         const exData = await getExData(page);
