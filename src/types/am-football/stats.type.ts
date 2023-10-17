@@ -47,11 +47,11 @@ export type stats = {
         home: string,
         away: string
     },
-    FieldGoalsSucceded?: {
+    FieldGoalsSucceeded?: {
         home: string,
         away: string
     },
-    FieldGoalsAttampted?: {
+    FieldGoalsAttempted?: {
         home: string,
         away: string
     },
@@ -71,7 +71,7 @@ export type stats = {
         home: string,
         away: string
     },
-    pointConversions?: {
+    Pointconversions?: {
         home: string,
         away: string
     },
