@@ -42,15 +42,13 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
                 let typeGoal = await row.$eval('.smv__subIncident', el => el.textContent);
                 let goalTime = await row.$eval('.smv__timeBox',el => el.textContent?.split(':')) ?? [];
                 let minute = Number(goalTime[1]) > 0 ? Number(goalTime[0]) + 1 : Number(goalTime[0]);
-                minute = minute + (n -1) * 20;
+                minute = minute + (n - 1) * 15;
                 let teamGoal = headerClass.includes('home') ? 1 : 2;
-                if (typeGoal?.includes('missed')) {
-                    continue;
-                }
+
                 if (typeGoal?.includes('Touchdown')) {
                     teamGoal === 1 ? homeTouchMin.push(minute) : awayTouchMin.push(minute);
                     touchSeq.push(teamGoal);
-                } else {
+                } else if (!typeGoal?.includes('Missed') && typeGoal?.includes('Field Goal')) {
                     teamGoal === 1 ? homeFieldMin.push(minute) : awayFieldMin.push(minute);
                     fieldSeq.push(teamGoal);
                 }
@@ -59,12 +57,12 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
 
         return {
             FTD: touchSeq[0],
-            TDM: [homeTouchMin,awayTouchMin][touchSeq[0]-1][0],
+            TDM: [homeTouchMin,awayTouchMin]?.[touchSeq[0]-1]?.[0],
             TDS: touchSeq.join(''),
             TDM1: homeTouchMin.join(';'),
             TDM2: awayTouchMin.join(';'),
             FFG: fieldSeq[0],
-            FGM: [homeFieldMin,awayFieldMin][fieldSeq[0]-1][0],
+            FGM: [homeFieldMin,awayFieldMin]?.[fieldSeq[0]-1]?.[0],
             FGS: fieldSeq.join(''),
             FGM1: homeFieldMin.join(';'),
             FGM2: awayFieldMin.join(';')
@@ -120,13 +118,13 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
                 RushingTouchdowns: {home: homeRTD = 0, away: awayRTD = 0} = {},
                 PassingTouchdowns: {home: homePTD = 0, away: awayPTD = 0} = {},
                 TurnoverTouchdowns: {home: homeTTD = 0, away: awayTTD = 0} = {},
-                FieldGoalsSucceded: {home: homeFGS = 0, away: awayFGS = 0} = {},
-                FieldGoalsAttampted: {home: homeFGA = 0, away: awayFGA = 0} = {},
+                FieldGoalsSucceeded: {home: homeFGS = 0, away: awayFGS = 0} = {},
+                FieldGoalsAttempted: {home: homeFGA = 0, away: awayFGA = 0} = {},
                 InterceptionThrown: {home: homeInt = 0, away: awayInt = 0} = {},
                 FumblesLost: {home: homeFl = 0, away: awayFl = 0} = {},
                 SacksAllowed: {home: homeSk = 0, away: awaySk = 0} = {},
                 Safeties: {home: homeSfty = 0, away: awaySfty = 0} = {},
-                pointConversions: {home: home2PM = 0, away: away2PM  = 0} = {},
+                Pointconversions: {home: home2PM = 0, away: away2PM  = 0} = {},
             } = {}
         } = el;
 
@@ -308,7 +306,7 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
             for (let i = 0; i < statName.length; i++) {
                 stats = {
                     ...stats,
-                    [statName[i]!.replaceAll(/[\s\W]/gm, '')]: {
+                    [statName[i]!.replaceAll(/[\s\W1-9]/gm, '')]: {
                         home: homeValue[i],
                         away: awayValue[i]
                     }
