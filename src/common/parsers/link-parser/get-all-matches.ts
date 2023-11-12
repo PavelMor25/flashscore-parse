@@ -14,15 +14,21 @@ const getAllMatches = async (page: Page, link: string): Promise<string[]> => {
         await page.waitForSelector(RESULT_TABLE);
 
         // Find btn "show more match"
-        let buttonMore = await page.waitForSelector(BTN_SHOW_MORE, {timeout: 5000}).catch((_) => false);
+        let buttonMore = null;
+
+        try {
+            buttonMore = await page.waitForSelector(BTN_SHOW_MORE, {timeout: 5000});
+        } catch {
+            buttonMore = null;
+        }
         // Click all btns "show more match"
         while (buttonMore) {
             try {
                 await page.click(BTN_SHOW_MORE, {delay: 15000});
+                buttonMore = await page.waitForSelector(BTN_SHOW_MORE);
             } catch {
                 break;
             }
-            buttonMore = await page.waitForSelector(BTN_SHOW_MORE).catch((_) => false);
         }
 
         // Find all matchesType and take they id

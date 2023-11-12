@@ -7,11 +7,12 @@ import chalk from "chalk";
 import {incidents} from "../../../../types/am-football/incidents.type.js";
 import {MATCHES_SELECTORS} from "../../../../constants/selectors.js";
 import {getCommonInfoMatch, getContent, getExData} from "../../utils/utils.js";
+import Spinner from "../../../../common/spinner/spinner.js";
 
 const error = chalk.red.bold;
 const other = chalk.magenta.bold;
 
-export default class ParserAmFootball implements ParserMatchInterface<amFootballMatchStat, jsonAmFootball> {
+export default class ParserAmFootball implements ParserMatchInterface<jsonAmFootball> {
     private matchesParsed: jsonAmFootball[] = [];
 
     constructor(
@@ -19,7 +20,7 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
         public matches: string[]
     ) {}
 
-    getGoals = async (): Promise<incidents> => {
+    private _getGoals = async (): Promise<incidents> => {
         const rowsInc = await this.page.$$('.smv__verticalSections.section > div');
         const touchSeq = [];
         const homeTouchMin = [];
@@ -69,7 +70,7 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
         }
     }
 
-    toJson = (el: amFootballMatchStat) => {
+    private _toJson = (el: amFootballMatchStat) => {
         let {
             id = '',
             countryCupRound: {country, league, round},
@@ -205,7 +206,7 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
         });
     }
 
-    parseMatch = async (id: string): Promise<amFootballMatchStat> => {
+    private _parseMatch = async (id: string): Promise<amFootballMatchStat> => {
         const page = this.page
         const {
             NAME_TEAMS,
@@ -243,7 +244,7 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
         }
 
         // Get incidentsType and red cards
-        const incidents = await this.getGoals();
+        const incidents = await this._getGoals();
 
         const exData = await getExData(page);
 
@@ -328,20 +329,20 @@ export default class ParserAmFootball implements ParserMatchInterface<amFootball
         errIteration: number = 0,
         repeat: boolean = true,
         matchesToParse: string[] = this.matches): Promise<matches<jsonAmFootball>> => {
+        const spinner = new Spinner();
         let errorsMatches = []
         let numMatch = 1;
         const matchesTotal = matchesToParse.length;
         for (let id of matchesToParse) {
             let label = `${numMatch}/${matchesTotal} Parse match ${id}`
-            console.time(label);
+            spinner.start(label);
             try {
-                await this.parseMatch(id).then((data) => this.toJson(data));
-                console.timeEnd(label);
+                await this._parseMatch(id).then((data) => this._toJson(data));
+                spinner.success(label);
                 numMatch++;
             } catch (err) {
                 errorsMatches.push(id)
-                console.log(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
-                console.timeEnd(label);
+                spinner.fail(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
                 numMatch++;
             }
         }

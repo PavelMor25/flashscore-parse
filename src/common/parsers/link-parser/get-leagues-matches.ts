@@ -2,6 +2,7 @@ import {Page} from "puppeteer";
 import {leagues} from "../../../types/leagues/leagues.type.js";
 import getAllMatches from "./get-all-matches.js";
 import chalk from "chalk";
+import Spinner from "../../spinner/spinner.js";
 
 const error = chalk.red.bold;
 const other = chalk.magenta.bold;
@@ -13,16 +14,15 @@ export const getLeaguesMatches = async (
     errorIteration: number = 0
 ): Promise <leagues> => {
     let errorsLeague = '';
-    console.time(`${link} ready: `);
+    const spinner = new Spinner()
+    spinner.start(other(`Parse link: ${link}`))
     try {
         let matchesLeague = await getAllMatches(page, link);
         matches.push(...matchesLeague);
-        console.timeEnd(`${link} ready: `);
+        spinner.success(`${link} ready`);
     } catch (err) {
         errorsLeague = link
-        console.log(error(`Error with link ${link}`))
-        console.log(error(`Error: ${err}`))
-        console.timeEnd(`${link} ready: `);
+        spinner.fail(error(`Error with link ${link}`))
 
         while (errorsLeague && errorIteration <= 3 && repeat) {
             errorIteration++;

@@ -40,6 +40,7 @@ export type jsonBaseball = {
     "EI2": number,
     "1stR": number,
     "1RI": string,
+    "1RP": number,
     "RS": string,
     "H1": number,
     "H2": number,

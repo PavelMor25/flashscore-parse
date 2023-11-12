@@ -7,10 +7,11 @@ import chalk from "chalk";
 import {incidents} from "../../../../types/hockey/incidents.js";
 import {MATCHES_SELECTORS} from "../../../../constants/selectors.js";
 import {getCommonInfoMatch, getContent, getExData} from "../../utils/utils.js";
+import Spinner from "../../../../common/spinner/spinner.js";
 
 const error = chalk.red.bold;
 const other = chalk.magenta.bold;
-export default class ParserHockey implements ParserMatchInterface<hockeyMatchStat, jsonHockey> {
+export default class ParserHockey implements ParserMatchInterface<jsonHockey> {
     private matchesParsed: jsonHockey[] = [];
 
     constructor(
@@ -18,7 +19,7 @@ export default class ParserHockey implements ParserMatchInterface<hockeyMatchSta
         public matches: string[]
     ) {}
 
-    getGoals = async (): Promise<incidents> => {
+    private _getGoals = async (): Promise<incidents> => {
         const rowsInc = await this.page.$$('.smv__verticalSections.section > div');
         const goalTeam = [];
         const homeMin = [];
@@ -62,7 +63,7 @@ export default class ParserHockey implements ParserMatchInterface<hockeyMatchSta
         }
     }
 
-    parseMatch = async (id: string): Promise<hockeyMatchStat> => {
+    private _parseMatch = async (id: string): Promise<hockeyMatchStat> => {
         const page = this.page;
         const {
             NAME_TEAMS,
@@ -100,7 +101,7 @@ export default class ParserHockey implements ParserMatchInterface<hockeyMatchSta
         }
 
         // Get incidentsType and red cards
-        const incidents = await this.getGoals();
+        const incidents = await this._getGoals();
 
         const exData = await getExData(page);
 
@@ -189,7 +190,7 @@ export default class ParserHockey implements ParserMatchInterface<hockeyMatchSta
         return matchStat;
     }
 
-    toJson = (el: hockeyMatchStat) => {
+    private _toJson = (el: hockeyMatchStat) => {
         let {
             id = '',
             countryCupRound: {country, league, round, leg},
@@ -315,20 +316,20 @@ export default class ParserHockey implements ParserMatchInterface<hockeyMatchSta
         errIteration: number = 0,
         repeat: boolean = true,
         matchesToParse: string[] = this.matches): Promise<matches<jsonHockey>> => {
+        const spinner = new Spinner();
         let errorsMatches = []
         let numMatch = 1;
         const matchesTotal = matchesToParse.length;
         for (let id of matchesToParse) {
             let label = `${numMatch}/${matchesTotal} Parse match ${id}`
-            console.time(label);
+            spinner.start(label);
             try {
-                await this.parseMatch(id).then((data) => this.toJson(data));
-                console.timeEnd(label);
+                await this._parseMatch(id).then((data) => this._toJson(data));
+                spinner.success(label);
                 numMatch++;
             } catch (err) {
                 errorsMatches.push(id)
-                console.log(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
-                console.timeEnd(label);
+                spinner.fail(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
                 numMatch++;
             }
         }

@@ -8,6 +8,7 @@ import {getCommonInfoMatch, getContent, getExData} from "../../utils/utils.js";
 import chalk from "chalk";
 import {incidents} from "../../../../types/baseball/incidents.type.js";
 import {periods} from "../../../../types/baseball/periods.type.js";
+import Spinner from "../../../../common/spinner/spinner.js";
 
 const error = chalk.red.bold;
 const other = chalk.magenta.bold;
@@ -16,7 +17,7 @@ interface StrinKey {
     [key: string]: number,
 }
 
-export default class ParserBaseball implements ParserMatchInterface<baseballMatchStat, jsonBaseball> {
+export default class ParserBaseball implements ParserMatchInterface<jsonBaseball> {
     private matchesParsed: jsonBaseball[] = [];
 
     constructor(
@@ -24,13 +25,14 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
         public matches: string[]
     ) {}
 
-    getRuns = (periods: periods & StrinKey): incidents => {
+    private _getRuns = (periods: periods & StrinKey): incidents => {
         let ingOrder = [
             '1I2','1I1','2I2','2I1','3I2','3I1','4I2','4I1','5I2','5I1',
             '6I2','6I1','7I2','7I1','8I2','8I1','9I2','9I1','EI2','EI1'
         ];
-        let firstRunTeam = 0
+        let firstRunTeam = null
         let firstRunIng = '';
+        let firstRunPoints = null
         let runSq = []
         for (let ing of ingOrder) {
             if (periods[ing]) {
@@ -38,19 +40,21 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
                 if (!firstRunTeam) {
                     firstRunTeam = isHome ? 1 : 2;
                     firstRunIng = ing[0];
+                    firstRunPoints = periods[ing];
                 }
                 isHome ? runSq.push(1) : runSq.push(2);
             }
         }
 
         return {
-            "1stR": firstRunTeam,
+            "1stR": firstRunTeam as number,
             "1RI": firstRunIng,
+            "1RP": firstRunPoints as number,
             "RS": runSq.join('')
         }
     }
 
-    toJson = (el: baseballMatchStat) => {
+    private _toJson = (el: baseballMatchStat) => {
         let {
             id = '',
             countryCupRound: {country, league, round, roundTwo, leg},
@@ -123,6 +127,7 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
             "EI2": periods['EI2'],
             "1stR": Number(incidents['1stR']),
             "1RI": incidents['1RI'],
+            "1RP": incidents['1RP'],
             "RS": incidents.RS,
             "H1": Number(homeH),
             "H2": Number(awayH),
@@ -153,7 +158,7 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
         })
     }
 
-    parseMatch = async (id: string): Promise<baseballMatchStat> => {
+    private _parseMatch = async (id: string): Promise<baseballMatchStat> => {
         const page = this.page;
         const {
             NAME_TEAMS,
@@ -190,7 +195,7 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
         }
 
         // Get incidentsType and red cards
-        const incidents = await this.getRuns(periods);
+        const incidents = await this._getRuns(periods);
 
         const pitchers = await getContent(page, '.smh__nbsp', 5000)
             .then((pits) => pits.map((el) => el?.split('.')[0]))
@@ -289,20 +294,20 @@ export default class ParserBaseball implements ParserMatchInterface<baseballMatc
         errIteration: number = 0,
         repeat: boolean = true,
         matchesToParse: string[] = this.matches): Promise<matches<jsonBaseball>> => {
+        const spinner = new Spinner();
         let errorsMatches = []
         let numMatch = 1;
         const matchesTotal = matchesToParse.length;
         for (let id of matchesToParse) {
             let label = `${numMatch}/${matchesTotal} Parse match ${id}`
-            console.time(label);
+            spinner.start(label);
             try {
-                await this.parseMatch(id).then((data) => this.toJson(data));
-                console.timeEnd(label);
+                await this._parseMatch(id).then((data) => this._toJson(data));
+                spinner.success(label);
                 numMatch++;
             } catch (err) {
                 errorsMatches.push(id)
-                console.log(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
-                console.timeEnd(label);
+                spinner.fail(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
                 numMatch++;
             }
         }
