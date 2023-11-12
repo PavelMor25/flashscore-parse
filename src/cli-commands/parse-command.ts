@@ -8,19 +8,14 @@ import {jsonFootball} from "../types/football/json-football.type.js";
 import ExcelWriter from "../common/excel-writer/excel-writer.js";
 import ParserFootball from "../common/parsers/matches-parser/football/parser-football.js";
 import {ParserMatchInterface} from "../common/parsers/matches-parser/parser-match.interface.js";
-// import {footballMatchStat} from "../types/football/match-stats.type.js";
 import ParserAmFootball from "../common/parsers/matches-parser/am-football/parser-am-football.js";
-// import {amFootballMatchStat} from "../types/am-football/match-stats.type.js";
 import {jsonAmFootball} from "../types/am-football/json-am-football.type.js";
 import ParserHockey from "../common/parsers/matches-parser/hockey/parser-hockey.js";
-// import {hockeyMatchStat} from "../types/hockey/match-stats.type.js";
 import {jsonHockey} from "../types/hockey/json-hockey.type.js";
 import ParserBaseball from "../common/parsers/matches-parser/baseball/parser-baseball.js";
-// import {baseballMatchStat} from "../types/baseball/match-stats.type.js";
 import {jsonBaseball} from "../types/baseball/json-baseball.type.js";
 import ParserBasketball from "../common/parsers/matches-parser/basketball/parser-basketball.js";
 import { jsonBasketball } from "../types/basketball/json-basketball.type.js";
-// import { basketballMatchStat } from "../types/basketball/match-stats.type.js";
 import Spinner from "../common/spinner/spinner.js";
 type ParseType = {
     [key: string]: string
