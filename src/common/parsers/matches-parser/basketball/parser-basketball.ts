@@ -10,11 +10,12 @@ import { basketballMatchStat } from "../../../../types/basketball/match-stats.ty
 import { periods } from "../../../../types/basketball/periods.type.js";
 import { topPlayers } from "../../../../types/basketball/top-players.type.js";
 import { pointAdvantage } from "../../../../types/basketball/pointAdvantage.type.js";
+import Spinner from "../../../../common/spinner/spinner.js";
 
 const error = chalk.red.bold;
 const other = chalk.magenta.bold;
 
-export default class ParserBasketball implements ParserMatchInterface<basketballMatchStat, jsonBasketball> {
+export default class ParserBasketball implements ParserMatchInterface<jsonBasketball> {
     private matchesParsed: jsonBasketball[] = [];
 
     constructor(
@@ -22,14 +23,14 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
         public matches: string[]
     ) {}
 
-    getIncidents = async (page: Page): Promise<incidents> => {
+    private _getIncidents = async (page: Page): Promise<incidents> => {
         
         try {
             await page.waitForSelector(MATCHES_SELECTORS.TABS_WITH_FULL_STAT, {timeout: 3000})
 
-            const pointAdvantage = await this.getPointAdvantage(page);
+            const pointAdvantage = await this._getPointAdvantage(page);
 
-            const topPlayers = await this.getPlayers(page);
+            const topPlayers = await this._getPlayers(page);
 
             return {
                 pointAdvantage,
@@ -65,7 +66,7 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
         
     }
 
-    getPointAdvantage = async (page: Page): Promise<pointAdvantage> => {
+    private _getPointAdvantage = async (page: Page): Promise<pointAdvantage> => {
         let pointAdvantage = {
             homeAdvantage: {
                 points: 0,
@@ -123,7 +124,7 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
         return pointAdvantage;
     }
 
-    getPlayers = async (page: Page): Promise<topPlayers> => {
+    private _getPlayers = async (page: Page): Promise<topPlayers> => {
         let topPlayers = {
             homePlayer: {
                 name: '',
@@ -174,7 +175,7 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
         return topPlayers;
     }
 
-    parseMatch = async (id: string): Promise<basketballMatchStat> => {
+    private _parseMatch = async (id: string): Promise<basketballMatchStat> => {
         const page = this.page;
         const {
             NAME_TEAMS,
@@ -222,7 +223,7 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
 
         const exData = await getExData(page);
 
-        const incidents = await this.getIncidents(page);
+        const incidents = await this._getIncidents(page);
 
         // Create obj before full stats
         matchStat = {
@@ -307,7 +308,7 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
         return matchStat;
     }
 
-    toJson = (el: basketballMatchStat) => {
+    private _toJson = (el: basketballMatchStat) => {
         let {
             id = '',
             countryCupRound: {country, league, round, roundTwo, leg},
@@ -436,20 +437,20 @@ export default class ParserBasketball implements ParserMatchInterface<basketball
         errIteration: number = 0,
         repeat: boolean = true,
         matchesToParse: string[] = this.matches): Promise<matches<jsonBasketball>> => {
+        const spinner = new Spinner();
         let errorsMatches = []
         let numMatch = 1;
         const matchesTotal = matchesToParse.length;
         for (let id of matchesToParse) {
             let label = `${numMatch}/${matchesTotal} Parse match ${id}`
-            console.time(label);
+            spinner.start(label);
             try {
-                await this.parseMatch(id).then((data) => this.toJson(data));
-                console.timeEnd(label);
+                await this._parseMatch(id).then((data) => this._toJson(data));
+                spinner.success(label);
                 numMatch++;
             } catch (err) {
                 errorsMatches.push(id)
-                console.log(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
-                console.timeEnd(label);
+                spinner.fail(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
                 numMatch++;
             }
         }

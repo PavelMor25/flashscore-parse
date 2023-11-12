@@ -7,10 +7,11 @@ import {jsonFootball} from "../../../../types/football/json-football.type.js";
 import {getCommonInfoMatch, getContent, getExData} from "../../utils/utils.js";
 import {matches} from "../../../../types/leagues/matches.type.js";
 import chalk from "chalk";
+import Spinner from "../../../../common/spinner/spinner.js";
 
 const error = chalk.red.bold;
 const other = chalk.magenta.bold;
-export default class ParserFootball implements ParserMatchInterface<footballMatchStat, jsonFootball> {
+export default class ParserFootball implements ParserMatchInterface<jsonFootball> {
     private matchesParsed: jsonFootball[] = [];
 
     constructor(
@@ -18,7 +19,7 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
         public matches: string[]
     ) {}
 
-    getGoalsCards = async (page: Page): Promise<incidents> => {
+    private _getGoalsCards = async (page: Page): Promise<incidents> => {
         const {
             INCIDENTS: {
                 ROWS,
@@ -95,7 +96,7 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
         }
     }
 
-    parseMatch = async (id: string): Promise<footballMatchStat> => {
+    private _parseMatch = async (id: string): Promise<footballMatchStat> => {
         const page = this.page;
         const {
             NAME_TEAMS,
@@ -141,7 +142,7 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
         }
 
         // Get incidentsType and red cards
-        const incidents = await this.getGoalsCards(page);
+        const incidents = await this._getGoalsCards(page);
 
         const exData = await getExData(page);
 
@@ -205,7 +206,7 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
             try {
                 await page.waitForSelector(TABLE_FULL_STATS);
             } catch (err) {
-                console.log(err);
+                console.log('\n',err);
                 return matchStat;
             }
 
@@ -237,7 +238,7 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
         return matchStat;
     }
 
-    toJson = (el: footballMatchStat) => {
+    private _toJson = (el: footballMatchStat) => {
         let {
             id = '',
             countryCupRound: {country, league, round, roundTwo, roundThree, leg},
@@ -373,21 +374,20 @@ export default class ParserFootball implements ParserMatchInterface<footballMatc
         errIteration: number = 0,
         repeat: boolean = true,
         matchesToParse: string[] = this.matches): Promise<matches<jsonFootball>> => {
+        const spinner = new Spinner();
         let errorsMatches = []
         let numMatch = 1;
         const matchesTotal = matchesToParse.length;
         for (let id of matchesToParse) {
             let label = `${numMatch}/${matchesTotal} Parse match ${id}`
-            console.time(label);
+            spinner.start(label);
             try {
-                await this.parseMatch(id).then((data) => this.toJson(data));
-                console.timeEnd(label);
+                await this._parseMatch(id).then((data) => this._toJson(data));
+                spinner.success(label);
                 numMatch++;
             } catch (err) {
-                console.log(err)
                 errorsMatches.push(id)
-                console.log(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
-                console.timeEnd(label);
+                spinner.fail(error(`${numMatch}/${matchesTotal} Error with match ${id}`))
                 numMatch++;
             }
         }
