@@ -1,4 +1,4 @@
-import {MATCH_SELECTORS} from "../../../constants/selectors.js";
+import {MATCHES_SELECTORS} from "../../../constants/selectors.js";
 import {Page} from "puppeteer";
 
 const getAllMatches = async (page: Page, link: string): Promise<string[]> => {
@@ -6,7 +6,7 @@ const getAllMatches = async (page: Page, link: string): Promise<string[]> => {
         RESULT_TABLE,
         BTN_SHOW_MORE,
         MATCH_LINE,
-    } = MATCH_SELECTORS;
+    } = MATCHES_SELECTORS;
 
         await page.goto(link);
 
@@ -24,7 +24,7 @@ const getAllMatches = async (page: Page, link: string): Promise<string[]> => {
         // Click all btns "show more match"
         while (buttonMore) {
             try {
-                await page.click(BTN_SHOW_MORE, {delay: 15000});
+                await page.click(BTN_SHOW_MORE, {delay: 10000});
                 buttonMore = await page.waitForSelector(BTN_SHOW_MORE);
             } catch {
                 break;

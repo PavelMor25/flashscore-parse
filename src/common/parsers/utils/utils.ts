@@ -1,6 +1,6 @@
 import {Page} from "puppeteer";
 import moment from "moment";
-import {MATCHES_SELECTORS} from "../../../constants/selectors.js";
+import {MATCH_SELECTORS} from "../../../constants/selectors.js";
 import {common} from "../../../types/matches/common.type";
 import {exDataType} from "../../../types/matches/exData.type";
 
@@ -28,7 +28,7 @@ export const getCommonInfoMatch = async (page: Page): Promise<common> => {
         SCORES,
         DATE,
         ODDS,
-    } = MATCHES_SELECTORS;
+    } = MATCH_SELECTORS;
 
     let countryLeague = await page.$eval(LEAGUE, (el) => el.textContent);
     let country = countryLeague?.split(': ')[0] ?? '';
