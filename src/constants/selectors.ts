@@ -1,4 +1,4 @@
-export const MATCHES_SELECTORS = {
+export const MATCH_SELECTORS = {
     'NAME_TEAMS': 'a.participant__participantName',
     'LEAGUE': '.tournamentHeader__country',
     'SCORES': {
@@ -23,17 +23,17 @@ export const MATCHES_SELECTORS = {
         'NAME': '.bookmaker a',
         'VALUE': '.oddsValueInner'
     },
-    'TABS_WITH_FULL_STAT': '.filter.detail__filter',
+    'TABS_WITH_FULL_STAT': '.filterOver.filterOver--indent',
     'LINK_FULL_STATS': 'a[href="#/match-summary/match-statistics"]',
-    'TABLE_FULL_STATS': '.subFilter.detail__subFilter.detail__subFilter--stats + .section',
+    'TABLE_FULL_STATS': '.subFilterOver.subFilterOver--indent.subFilterOver--radius + .section',
     'FULL_STATS': {
-        'NAME': '.section div div div[class*="categoryName"]',
-        'HOME': '.section div div div[class*="homeValue"]',
-        'AWAY': '.section div div div[class*="awayValue"]'
+        'NAME': '.section div div div[class*="category"] strong',
+        'HOME': '.section div div div[class*="homeValue"] strong',
+        'AWAY': '.section div div div[class*="awayValue"] strong'
     },
 };
 
-export const MATCH_SELECTORS = {
+export const MATCHES_SELECTORS = {
     'RESULT_TABLE': '.event.event--results',
     'BTN_SHOW_MORE': 'a.event__more.event__more--static',
     'MATCH_LINE': '.event__match.event__match--static.event__match--twoLine',

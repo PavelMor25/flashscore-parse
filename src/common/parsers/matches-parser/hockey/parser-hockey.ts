@@ -5,7 +5,7 @@ import {Page} from "puppeteer";
 import {matches} from "../../../../types/leagues/matches.type.js";
 import chalk from "chalk";
 import {incidents} from "../../../../types/hockey/incidents.js";
-import {MATCHES_SELECTORS} from "../../../../constants/selectors.js";
+import {MATCH_SELECTORS} from "../../../../constants/selectors.js";
 import {getCommonInfoMatch, getContent, getExData} from "../../utils/utils.js";
 import Spinner from "../../../../common/spinner/spinner.js";
 
@@ -72,7 +72,7 @@ export default class ParserHockey implements ParserMatchInterface<jsonHockey> {
             LINK_FULL_STATS,
             TABLE_FULL_STATS,
             FULL_STATS
-        } = MATCHES_SELECTORS;
+        } = MATCH_SELECTORS;
 
         let matchStat: hockeyMatchStat;
 

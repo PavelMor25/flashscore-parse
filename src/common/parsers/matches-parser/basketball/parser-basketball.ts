@@ -1,6 +1,6 @@
 import {ParserMatchInterface} from "../parser-match.interface.js";
 import {Page} from "puppeteer";
-import {MATCHES_SELECTORS} from "../../../../constants/selectors.js";
+import {MATCH_SELECTORS} from "../../../../constants/selectors.js";
 import {incidents} from "../../../../types/basketball/incidents.type.js";
 import {getCommonInfoMatch, getContent, replacerStatName, getExData} from "../../utils/utils.js";
 import {matches} from "../../../../types/leagues/matches.type.js";
@@ -26,7 +26,7 @@ export default class ParserBasketball implements ParserMatchInterface<jsonBasket
     private _getIncidents = async (page: Page): Promise<incidents> => {
         
         try {
-            await page.waitForSelector(MATCHES_SELECTORS.TABS_WITH_FULL_STAT, {timeout: 3000})
+            await page.waitForSelector(MATCH_SELECTORS.TABS_WITH_FULL_STAT, {timeout: 3000})
 
             const pointAdvantage = await this._getPointAdvantage(page);
 
@@ -183,7 +183,7 @@ export default class ParserBasketball implements ParserMatchInterface<jsonBasket
             LINK_FULL_STATS,
             TABLE_FULL_STATS,
             FULL_STATS
-        } = MATCHES_SELECTORS;
+        } = MATCH_SELECTORS;
 
         let matchStat: basketballMatchStat;
 

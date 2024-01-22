@@ -1,6 +1,6 @@
 import {ParserMatchInterface} from "../parser-match.interface.js";
 import {Page} from "puppeteer";
-import {MATCHES_SELECTORS} from "../../../../constants/selectors.js";
+import {MATCH_SELECTORS} from "../../../../constants/selectors.js";
 import {footballMatchStat} from "../../../../types/football/match-stats.type.js";
 import {incidents} from "../../../../types/football/incidents.type.js";
 import {jsonFootball} from "../../../../types/football/json-football.type.js";
@@ -26,7 +26,7 @@ export default class ParserFootball implements ParserMatchInterface<jsonFootball
                 TYPE_INCIDENT,
                 TIME_INCIDENT
             }
-        } = MATCHES_SELECTORS
+        } = MATCH_SELECTORS
 
         let rowsPeriod = await page.$$(ROWS);
         let goalTimeTeamA = [];
@@ -106,7 +106,7 @@ export default class ParserFootball implements ParserMatchInterface<jsonFootball
             LINK_FULL_STATS,
             TABLE_FULL_STATS,
             FULL_STATS
-        } = MATCHES_SELECTORS;
+        } = MATCH_SELECTORS;
 
         let matchStat: footballMatchStat;
 
